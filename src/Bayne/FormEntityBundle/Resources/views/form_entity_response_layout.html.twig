@@ -1,0 +1,97 @@
+{% extends 'bootstrap_3_layout.html.twig' %}
+
+{%- block textarea_widget -%}
+  {% set attr = attr|merge({class: (attr.class|default('') ~ ' form-control')|trim}) %}
+  {% set autoexpandAttr = {
+    'data-autoexpand': 1,
+    'data-autoexpand-min-rows': 2,
+    'data-autoexpand-max-rows': 12,
+  } %}
+  {% set attr = autoexpandAttr|merge(attr) %}
+  {{- parent() -}}
+{%- endblock textarea_widget -%}
+
+{% block _response_answers_row %}
+  {% set blocks = [] %}
+  {% for child in form %}
+    {% set block %}
+      <li data-behat-evaluation-question-number="{{ child.vars.position }}">
+        {{- form_row(child) -}}
+      </li>
+    {% endset %}
+    {% set blocks = blocks|merge({('0' ~ child.vars.position): block}) %}
+  {% endfor %}
+  {% if form.vars.decorators is defined %}
+    {% for decorator in form.vars.decorators %}
+      {% set block %}
+        {% if decorator.getDecoratorType == 'header' %}
+          <li class="skip">
+            <h2> {{ decorator.text }} </h2>
+          </li>
+        {% elseif decorator.getDecoratorType == 'text' %}
+          <li class="skip">
+              {{ decorator.text|markdown }}
+          </li>
+        {% elseif decorator.getDecoratorType == 'horizontalLine' %}
+          <li class="skip horizontal-line">
+            <div><hr /></div>
+          </li>
+        {% else %}
+          <li class="skip">
+            <p> Unknown Decorator Type: {{ decorator.getDecoratorType }}</p>
+          </li>
+        {% endif %}
+      {% endset %}
+      {% set blocks = blocks|merge({('0' ~ decorator.position): block}) %}
+    {% endfor %}
+  {% endif %}
+  {% for key in blocks|keys|sort %}
+    {{ blocks[key]|raw }}
+  {% endfor %}
+{% endblock %}
+
+{% block form_row -%}
+  <div class="question form-group{% if (not compound or force_error|default(false)) and not valid %} has-error{% endif %}">
+    {{- form_label(form) -}}
+    <div>
+      {{- form_widget(form) -}}
+      {{- form_errors(form) -}}
+    </div>
+  </div>
+{%- endblock form_row %}
+
+{% block form_label %}
+  {%- set label_attr = label_attr|merge({class: (label_attr.class|default('') ~ ' control-label')|trim}) -%}
+  {% if label is not same as(false) -%}
+    {% if not compound -%}
+      {% set label_attr = label_attr|merge({'for': id}) %}
+    {%- endif -%}
+    {% if required -%}
+      {% set label_attr = label_attr|merge({'class': (label_attr.class|default('') ~ ' required')|trim}) %}
+    {%- endif -%}
+    {% if label is empty -%}
+      {%- if label_format is not empty -%}
+        {% set label = label_format|replace({
+        '%name%': name,
+        '%id%': id,
+        }) %}
+      {%- else -%}
+        {% set label = name|humanize %}
+      {%- endif -%}
+    {%- endif -%}
+    <label{% for attrname, attrvalue in label_attr %} {{ attrname }}="{{ attrvalue }}"{% endfor %}>
+    {% if label_attr['data-markdown'] is defined and label_attr['data-markdown'] %}
+      {{- (translation_domain is same as(false) ? label : label|trans({}, translation_domain))|markdown -}}
+    {% else %}
+      {{- translation_domain is same as(false) ? label : label|trans({}, translation_domain) -}}
+    {% endif %}
+    </label>
+  {%- endif -%}
+{% endblock form_label %}
+
+{% block choice_widget -%}
+  {{- parent() -}}
+  {%- if multiple == false -%}
+  <button class="btn btn-sm question-unselect" type="button" data-unselect-input-name="{{ full_name }}">Unselect</button>
+  {%- endif -%}
+{%- endblock choice_widget %}

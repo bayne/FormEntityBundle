@@ -1,0 +1,53 @@
+services:
+    bayne.form_entity_bundle.kernel.event_listener.json_request_listener:
+        class: Bayne\FormEntityBundle\Request\Event\JsonRequestListener
+        arguments:
+            - '@serializer.encoder.json'
+        tags:
+            - { name: 'kernel.event_listener', event: 'kernel.request', method: 'onKernelRequest', priority: 100 }
+
+    bayne.form_entity_bundle.abstract_element.repository:
+        class: Bayne\FormEntityBundle\Entity\FormEntity\Element\AbstractElementRepository
+        factory: ['@doctrine.orm.default_entity_manager', getRepository]
+        public: false
+        arguments:
+            - Bayne\FormEntityBundle\Entity\FormEntity\Element\AbstractElement
+
+    bayne.form_entity_bundle.choice.repository:
+        class: Bayne\FormEntityBundle\Entity\FormEntity\Element\Question\ChoiceRepository
+        factory: ['@doctrine.orm.default_entity_manager', getRepository]
+        public: false
+        arguments:
+            - Bayne\FormEntityBundle\Entity\FormEntity\Element\Question\Choice
+
+    bayne.form_entity_bundle.response.manager:
+        class: Bayne\FormEntityBundle\Entity\FormEntity\Response\ResponseManager
+        arguments:
+            - '@bayne.form_entity_bundle.response.repository'
+
+    bayne.form_entity_bundle.response.repository:
+        class: Bayne\FormEntityBundle\Entity\FormEntity\Response\ResponseRepository
+        factory: ['@doctrine.orm.default_entity_manager', getRepository]
+        public: false
+        arguments:
+            - Bayne\FormEntityBundle\Entity\FormEntity\Response
+
+    bayne.form_entity_bundle.abstract_answer.repository:
+        class: Bayne\FormEntityBundle\Entity\FormEntity\Response\Answer\AbstractAnswerRepository
+        factory: ['@doctrine.orm.default_entity_manager', getRepository]
+        public: false
+        arguments:
+            - Bayne\FormEntityBundle\Entity\FormEntity\Response\Answer\AbstractAnswer
+
+    bayne.form_entity_bundle.text_answer.repository:
+        class: Bayne\FormEntityBundle\Entity\FormEntity\Response\Answer\TextAnswerRepository
+        factory: ['@doctrine.orm.default_entity_manager', getRepository]
+        public: false
+        arguments:
+            - Bayne\FormEntityBundle\Entity\FormEntity\Response\Answer\TextAnswer
+    bayne.form_entity_bundle.choice_answer.repository:
+        class: Bayne\FormEntityBundle\Entity\FormEntity\Response\Answer\ChoiceAnswerRepository
+        factory: ['@doctrine.orm.default_entity_manager', getRepository]
+        public: false
+        arguments:
+            - Bayne\FormEntityBundle\Entity\FormEntity\Response\Answer\ChoiceAnswer
