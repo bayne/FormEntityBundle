@@ -1,0 +1,12 @@
+{
+    "name": "bayne/form-entity-bundle",
+    "description": "A Symfony bundle for adding user form building functionality to your application",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Brian Payne",
+            "email": "bwpayne@gmail.com"
+        }
+    ],
+    "require": {}
+}
